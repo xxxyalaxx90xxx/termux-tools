@@ -1,0 +1,11 @@
+sh33ll
+update.txt
+core/__pycache__
+lzdb.py
+lazymux.conf
+lzinfo.py
+lzinfo.txt
+lzinfo.history
+lzinfo.py_fixed.py
+logging-lzinfo.log
+sample.txt

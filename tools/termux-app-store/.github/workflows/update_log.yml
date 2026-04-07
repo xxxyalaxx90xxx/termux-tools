@@ -1,0 +1,248 @@
+name: Auto Update CHANGELOG
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/*/build.sh'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-changelog:
+    name: Update CHANGELOG.md
+    runs-on: ubuntu-latest
+    if: github.repository == 'djunekz/termux-app-store' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: true
+          ref: ${{ github.ref_name }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "Termux App Store"
+          git config user.email "258516621+termux-app-store@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/djunekz/termux-app-store.git
+
+      - name: Detect changed packages
+        id: detect
+        shell: bash
+        run: |
+          set -e
+
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.event.after }}"
+
+          echo "=== Package Change Detection ==="
+          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | grep 'packages/.*/build.sh' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No package changes detected"
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Changed: $CHANGED"
+
+          ADDED_FILE=$(mktemp)
+          UPDATED_FILE=$(mktemp)
+          META_FILE=$(mktemp)
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            pkg=$(basename "$(dirname "$file")")
+            ver=$(grep '^TERMUX_PKG_VERSION=' "$file" | head -1 | sed 's/^TERMUX_PKG_VERSION=//;s/["\x27]//g')
+            desc=$(grep '^TERMUX_PKG_DESCRIPTION=' "$file" | head -1 | sed 's/^TERMUX_PKG_DESCRIPTION=//;s/["\x27]//g')
+            echo "→ Processing: $pkg"
+
+            if ! git cat-file -e "$BEFORE:$file" 2>/dev/null; then
+              if [ -n "$desc" ]; then
+                printf -- '- Package `%s` v%s - %s\n' "$pkg" "$ver" "$desc" >> "$ADDED_FILE"
+              else
+                printf -- '- Package `%s` v%s\n' "$pkg" "$ver" >> "$ADDED_FILE"
+              fi
+              echo "  Status: NEW (v${ver})"
+            else
+              old_ver=$(git show "$BEFORE:$file" | grep '^TERMUX_PKG_VERSION=' | head -1 | sed 's/^TERMUX_PKG_VERSION=//;s/["\x27]//g')
+              new_ver="$ver"
+              if [ "$old_ver" != "$new_ver" ]; then
+                printf -- '- Package `%s` v%s → v%s\n' "$pkg" "$old_ver" "$new_ver" >> "$UPDATED_FILE"
+                echo "  Status: UPDATED ($old_ver → $new_ver)"
+              else
+                if git diff "$BEFORE" "$AFTER" -- "$file" | grep -qE '^[+-]TERMUX_PKG_(SRCURL|SHA256|DEPENDS)='; then
+                  printf -- '- Package `%s` v%s - Updated metadata\n' "$pkg" "$new_ver" >> "$META_FILE"
+                  echo "  Status: METADATA CHANGED"
+                fi
+              fi
+            fi
+          done <<< "$CHANGED"
+
+          echo "added_file=$ADDED_FILE"    >> "$GITHUB_OUTPUT"
+          echo "updated_file=$UPDATED_FILE" >> "$GITHUB_OUTPUT"
+          echo "meta_file=$META_FILE"      >> "$GITHUB_OUTPUT"
+
+          if [ ! -s "$ADDED_FILE" ] && [ ! -s "$UPDATED_FILE" ] && [ ! -s "$META_FILE" ]; then
+            echo "No significant changes"
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Update CHANGELOG.md
+        if: steps.detect.outputs.has_changes == 'true'
+        shell: bash
+        run: |
+          set -e
+
+          ADDED_FILE="${{ steps.detect.outputs.added_file }}"
+          UPDATED_FILE="${{ steps.detect.outputs.updated_file }}"
+          META_FILE="${{ steps.detect.outputs.meta_file }}"
+
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "ERROR: CHANGELOG.md not found"
+            exit 1
+          fi
+
+          echo "=== Updating CHANGELOG.md (smart merge) ==="
+
+          python3 - "$ADDED_FILE" "$UPDATED_FILE" "$META_FILE" << 'PYEOF'
+          import sys, re
+
+          added_file, updated_file, meta_file = sys.argv[1], sys.argv[2], sys.argv[3]
+
+          def read_lines(path):
+              try:
+                  with open(path) as f:
+                      return [l.rstrip('\n') for l in f if l.strip()]
+              except:
+                  return []
+
+          new_added   = read_lines(added_file)
+          new_updated = read_lines(updated_file)
+          new_meta    = read_lines(meta_file)
+
+          if not new_added and not new_updated and not new_meta:
+              sys.exit(0)
+
+          with open('CHANGELOG.md') as f:
+              lines = f.read().split('\n')
+
+          unreleased_start = None
+          unreleased_end   = None
+          for i, line in enumerate(lines):
+              if re.match(r'^## \[Unreleased\]', line):
+                  unreleased_start = i
+              elif unreleased_start is not None and unreleased_end is None:
+                  if (re.match(r'^## \[', line) and i != unreleased_start) or re.match(r'^---', line):
+                      unreleased_end = i
+                      break
+
+          if unreleased_start is None:
+              print("ERROR: [Unreleased] not found")
+              sys.exit(1)
+          if unreleased_end is None:
+              unreleased_end = len(lines)
+
+          inner = lines[unreleased_start + 1 : unreleased_end]
+          after = lines[unreleased_end:]
+
+          sections_order = []
+          sections_data  = {}
+          current_section = None
+
+          for line in inner:
+              m = re.match(r'^### (.+)', line)
+              if m:
+                  current_section = m.group(1).strip()
+                  if current_section not in sections_data:
+                      sections_order.append(current_section)
+                      sections_data[current_section] = []
+              elif current_section and line.strip():
+                  sections_data[current_section].append(line)
+
+          def merge(section_name, new_items):
+              if not new_items:
+                  return
+              existing = sections_data.get(section_name, [])
+              for item in new_items:
+                  m = re.match(r'- Package `([^`]+)`', item)
+                  pkg_name = m.group(1) if m else None
+                  if pkg_name:
+                      if not any(pkg_name in ex for ex in existing):
+                          existing.append(item)
+                  elif item not in existing:
+                      existing.append(item)
+              if section_name not in sections_data:
+                  sections_order.append(section_name)
+              sections_data[section_name] = existing
+
+          merge('Added',   new_added)
+          merge('Update',  new_updated)
+          merge('Changed', new_meta)
+
+          new_inner = ['']
+          for sec in sections_order:
+              items = sections_data.get(sec, [])
+              if not items:
+                  continue
+              new_inner.append(f'### {sec}')
+              new_inner.extend(items)
+              new_inner.append('')
+
+          result = lines[:unreleased_start + 1] + new_inner + after
+
+          with open('CHANGELOG.md', 'w') as f:
+              f.write('\n'.join(result))
+
+          print("✅ Smart merge done")
+          PYEOF
+
+          rm -f "$ADDED_FILE" "$UPDATED_FILE" "$META_FILE"
+
+      - name: Commit and push
+        if: steps.detect.outputs.has_changes == 'true'
+        shell: bash
+        run: |
+          set -e
+          git add CHANGELOG.md
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "docs: update CHANGELOG [skip ci]"
+
+          MAX_RETRIES=3
+          RETRY=0
+          while [ $RETRY -lt $MAX_RETRIES ]; do
+            if git push origin "${{ github.ref_name }}"; then
+              echo "✅ Push successful"
+              exit 0
+            fi
+            RETRY=$((RETRY + 1))
+            echo "Retry $RETRY/$MAX_RETRIES"
+            if [ $RETRY -lt $MAX_RETRIES ]; then
+              git pull --rebase origin "${{ github.ref_name }}"
+              sleep 2
+            fi
+          done
+          echo "❌ Push failed"
+          exit 1
+
+      - name: Summary
+        if: steps.detect.outputs.has_changes == 'true'
+        run: |
+          echo "## 📝 CHANGELOG Updated" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY

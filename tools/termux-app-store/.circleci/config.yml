@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  coverage:
+    docker:
+      - image: cimg/python:3.14
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            pip install coverage pytest
+
+      - run:
+          name: Run tests coverage
+          command: |
+            coverage run -m pytest tests/
+            coverage xml
+
+      - run:
+          name: Upload coverage to Codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash) -f coverage.xml
+
+workflows:
+  coverage:
+    jobs:
+      - coverage

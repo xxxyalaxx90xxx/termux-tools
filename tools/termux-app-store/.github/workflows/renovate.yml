@@ -1,0 +1,90 @@
+name: Renovate PR Checker
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  renovate-check:
+    name: Renovate PR Checker
+    runs-on: ubuntu-latest
+    if: github.actor == 'renovate[bot]'
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: files
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          FILES=$(git diff "$PR_BASE_SHA"...HEAD --name-only || true)
+          {
+            echo "files<<EOF"
+            echo "$FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Skip if no relevant changes
+        if: |
+          !contains(steps.files.outputs.files, 'build.sh') &&
+          !contains(steps.files.outputs.files, 'package.json') &&
+          !contains(steps.files.outputs.files, 'Cargo.toml') &&
+          !contains(steps.files.outputs.files, 'requirements.txt')
+        run: |
+          echo "ℹ️ No relevant files changed by Renovate"
+          exit 0
+
+      - name: Lint build.sh (syntax)
+        if: contains(steps.files.outputs.files, 'build.sh')
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.files }}
+        shell: bash
+        run: |
+          set -e
+          while IFS= read -r file; do
+            [[ "$file" != *build.sh ]] && continue
+            echo "🧹 Checking $file"
+            sed -i 's/\r$//' "$file"
+            bash -n "$file"
+          done <<< "$CHANGED_FILES"
+
+      - name: Validate package metadata
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -e
+          FAIL=0
+          PKGS=$(git diff "$PR_BASE_SHA"...HEAD --name-only \
+            | awk -F/ '/^packages\/[^/]+\/build.sh$/ {print $2}' \
+            | sort -u)
+          while IFS= read -r PKG; do
+            [[ -z "$PKG" ]] && continue
+            BUILD="packages/$PKG/build.sh"
+            echo "🔍 Validating $BUILD"
+            get() { grep -E "^$1=" "$BUILD" | cut -d= -f2- | head -n1; }
+            [[ -z "$(get TERMUX_PKG_VERSION)" ]] && FAIL=1
+            [[ -z "$(get TERMUX_PKG_SRCURL)" ]] && FAIL=1
+            [[ "$(get TERMUX_PKG_SHA256)" =~ ^[a-f0-9]{64}$ ]] || FAIL=1
+          done <<< "$PKGS"
+          [ "$FAIL" -eq 0 ]
+
+      - name: Comment success
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🤖 **Renovate PR detected**
+            ✅ Syntax & metadata check passed
+            🔒 Manual review still required

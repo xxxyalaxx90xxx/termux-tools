@@ -1,0 +1,9 @@
+TERMUX_PKG_HOMEPAGE=https://github.com/djunekz/termux-app-store
+TERMUX_PKG_DESCRIPTION="Advance Terminal Editor Ultimate"
+TERMUX_PKG_LICENSE="MIT"
+TERMUX_PKG_MAINTAINER="@termux-app-store"
+TERMUX_PKG_VERSION=1.0.0
+TERMUX_PKG_SRCURL=https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/tx
+TERMUX_PKG_SHA256=b1afdfb86640188aaa555c9f4b0c5a1cb4194b07c8d8d06e23ba5ca64670f418
+TERMUX_PKG_DEPENDS="python, ncurses"
+TERMUX_PKG_BUILD_IN_SRC=true

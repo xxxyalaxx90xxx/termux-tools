@@ -1,0 +1,214 @@
+name: PR Package Checker & Report
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review-packages:
+    name: Validate changed packages
+    runs-on: ubuntu-latest
+
+    if: github.event.label.name == 'review-checker'
+
+    steps:
+      - name: Checkout PR code (safe)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect changed packages
+        id: packages
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          PKGS=$(git diff "$PR_BASE_SHA"...HEAD --name-only \
+            | awk -F/ '/^packages\/[^/]+\/build\.sh$/ {print $2}' \
+            | sort -u)
+
+          {
+            echo "changed<<EOF"
+            echo "$PKGS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Changed packages: $PKGS"
+
+      - name: Validate build.sh metadata (safe, no eval)
+        id: checker
+        env:
+          CHANGED_PKGS: ${{ steps.packages.outputs.changed }}
+        shell: bash
+        run: |
+          set +e
+          FAIL=0
+          REPORT="# 📋 Package Review Report\n\n"
+
+          if [[ -z "$CHANGED_PKGS" ]]; then
+            REPORT+="ℹ️ No package changes detected in this PR\n"
+            echo -e "$REPORT"
+            {
+              echo "report<<EOF"
+              echo -e "$REPORT"
+              echo "EOF"
+              echo "fail=0"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          while IFS= read -r PKG; do
+            [[ -z "$PKG" ]] && continue
+            BUILD_SH="packages/$PKG/build.sh"
+            REPORT+="## 📦 Package: \`$PKG\`\n\n"
+
+            if [[ ! -f "$BUILD_SH" ]]; then
+              REPORT+="❌ **build.sh missing**\n\n"
+              FAIL=1
+              continue
+            fi
+
+            get_var() {
+              local var_name="$1"
+              local result
+              result=$(grep -E "^${var_name}=" "$BUILD_SH" 2>/dev/null | head -n1 | cut -d= -f2- | sed "s/^['\"]//;s/['\"]$//" | tr -d "'" 2>/dev/null || echo "")
+              echo "$result"
+            }
+
+            VERSION=$(get_var TERMUX_PKG_VERSION)
+            SRCURL_RAW=$(get_var TERMUX_PKG_SRCURL)
+            SHA256=$(get_var TERMUX_PKG_SHA256)
+            DESC=$(get_var TERMUX_PKG_DESCRIPTION)
+            HOMEPAGE=$(get_var TERMUX_PKG_HOMEPAGE)
+            LICENSE=$(get_var TERMUX_PKG_LICENSE)
+            MAINTAINER=$(get_var TERMUX_PKG_MAINTAINER)
+
+            check() {
+              local var_name="$1"
+              local var_value="$2"
+              local is_required="${3:-true}"
+
+              if [[ -z "$var_value" ]]; then
+                if [[ "$is_required" == "true" ]]; then
+                  REPORT+="- ❌ **Missing \`$var_name\`**\n"
+                  FAIL=1
+                else
+                  REPORT+="- ⚠️  Missing \`$var_name\` (optional)\n"
+                fi
+              else
+                REPORT+="- ✅ \`$var_name\`: \`${var_value:0:50}\`\n"
+              fi
+            }
+
+            check "TERMUX_PKG_VERSION"     "$VERSION"     true
+            check "TERMUX_PKG_SRCURL"      "$SRCURL_RAW"  true
+            check "TERMUX_PKG_SHA256"      "$SHA256"      true
+            check "TERMUX_PKG_DESCRIPTION" "$DESC"        false
+            check "TERMUX_PKG_HOMEPAGE"    "$HOMEPAGE"    false
+            check "TERMUX_PKG_LICENSE"     "$LICENSE"     false
+            check "TERMUX_PKG_MAINTAINER"  "$MAINTAINER"  false
+
+            SRCURL="$SRCURL_RAW"
+            if [[ "$SRCURL" == *'${TERMUX_PKG_VERSION}'* ]]; then
+              if [[ -z "$VERSION" ]]; then
+                REPORT+="- ❌ **TERMUX_PKG_VERSION required for SRCURL expansion**\n"
+                FAIL=1
+              else
+                SRCURL="${SRCURL//\$\{TERMUX_PKG_VERSION\}/$VERSION}"
+                REPORT+="- 🔁 SRCURL expanded: \`${SRCURL:0:70}...\`\n"
+              fi
+            fi
+
+            if [[ -n "$SHA256" ]]; then
+              if [[ ! "$SHA256" =~ ^[a-fA-F0-9]{64}$ ]]; then
+                REPORT+="- ❌ **Invalid SHA256 format** (must be 64 hex chars)\n"
+                REPORT+="  Got: \`$SHA256\`\n"
+                FAIL=1
+              fi
+            fi
+
+            if [[ "$SRCURL" =~ (latest|master|main|HEAD) ]]; then
+              REPORT+="- ⚠️  **Floating SRCURL detected** (latest/master/main/HEAD)\n"
+              REPORT+="  This may cause reproducibility issues\n"
+            fi
+
+            if [[ -n "$SRCURL" ]]; then
+              if [[ ! "$SRCURL" =~ ^https?:// ]]; then
+                REPORT+="- ❌ **Invalid SRCURL format** (must start with http:// or https://)\n"
+                FAIL=1
+              fi
+            fi
+
+            if [[ -n "$SRCURL" && -n "$SHA256" ]]; then
+              REPORT+="- 🔍 **Verifying SHA256...**\n"
+              TMP="$(mktemp)"
+
+              if timeout 60 curl -fsSL "$SRCURL" -o "$TMP" 2>/dev/null; then
+                CALC=$(sha256sum "$TMP" 2>/dev/null | awk '{print $1}')
+                FILE_SIZE=$(ls -lh "$TMP" 2>/dev/null | awk '{print $5}')
+
+                REPORT+="  - Downloaded: \`$FILE_SIZE\`\n"
+
+                if [[ "$CALC" != "$SHA256" ]]; then
+                  REPORT+="  - ❌ **SHA256 mismatch!**\n"
+                  REPORT+="    - Expected: \`$SHA256\`\n"
+                  REPORT+="    - Got: \`$CALC\`\n"
+                  FAIL=1
+                else
+                  REPORT+="  - ✅ **SHA256 verified successfully**\n"
+                fi
+              else
+                HTTP_CODE=$(curl -fsSL -o /dev/null -w "%{http_code}" "$SRCURL" 2>/dev/null || echo "000")
+                REPORT+="  - ❌ **Failed to download source**\n"
+                REPORT+="    - URL: \`$SRCURL\`\n"
+                REPORT+="    - HTTP Status: \`$HTTP_CODE\`\n"
+                FAIL=1
+              fi
+
+              rm -f "$TMP" 2>/dev/null || true
+            fi
+
+            REPORT+="\n---\n\n"
+          done <<< "$CHANGED_PKGS"
+
+          if [[ "$FAIL" -eq 0 ]]; then
+            REPORT+="## ✅ All Validations Passed\n\n"
+            REPORT+="This PR is ready for manual review and testing.\n"
+          else
+            REPORT+="## ❌ Validation Failed\n\n"
+            REPORT+="Please fix the issues above and push new commits.\n"
+            REPORT+="The workflow will automatically re-run on new commits.\n"
+          fi
+
+          {
+            echo "report<<EOF"
+            echo -e "$REPORT"
+            echo "EOF"
+            echo "fail=$FAIL"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post PR report
+        uses: marocchino/sticky-pull-request-comment@d4d6b0936434b21bc8345ad45a440c5f7d2c40ff # v3.0.3
+        with:
+          header: package-review
+          message: ${{ steps.checker.outputs.report }}
+
+      - name: Update PR status check
+        if: steps.checker.outputs.fail != '0'
+        run: |
+          echo "❌ Package validation failed"
+          echo "Please check the PR comment for details"
+          exit 1
+
+      - name: Success status
+        if: steps.checker.outputs.fail == '0'
+        run: |
+          echo "✅ Package validation passed"
+          echo "PR is ready for manual review"

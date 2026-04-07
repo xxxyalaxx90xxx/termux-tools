@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+BASE_DIR="$ROOT/tools"
+COMMAND="${1:-}"
+
+COLORS_FILE="$BASE_DIR/colors.sh"
+
+if [[ -f "$COLORS_FILE" ]]; then
+  source "$COLORS_FILE"
+else
+  RED=""
+  GREEN=""
+  CYAN=""
+  BOLD_RED=""
+  BOLD_GREEN=""
+  BOLD_CYAN=""
+  RESET=""
+fi
+
+case "$COMMAND" in
+    create|-c|-C)
+        shift
+        exec "$BASE_DIR/termux-build-create.sh" "$@"
+        ;;
+
+    lint|-l|-L)
+        shift
+        exec "$BASE_DIR/termux-build-lint.sh" "$@"
+        ;;
+
+    check-pr|-cpr|-pr)
+        shift
+        exec "$BASE_DIR/termux-build-check-pr.sh" "$@"
+        ;;
+
+    doctor|-d|-D)
+        exec "$BASE_DIR/termux-build-doctor.sh"
+        ;;
+
+    suggest|-s|-S)
+        shift
+        exec "$BASE_DIR/termux-build-suggest.sh" "$@"
+        ;;
+
+    explain|-e|-E|-ex)
+        shift
+        exec "$BASE_DIR/termux-build-explain.sh" "$@"
+        ;;
+
+    template|-t|-T)
+        exec "$BASE_DIR/termux-build-template.sh"
+        ;;
+
+    guide|-g|-G)
+        exec "$BASE_DIR/termux-build-guide.sh"
+        ;;
+
+    init|-i|-I)
+        shift
+        exec "$BASE_DIR/termux-build-init.sh" "$@"
+        ;;
+
+    *)
+        echo -e "${BOLD_RED}Usage:${RESET}"
+        echo -e "  ${GREEN}./termux-build create <package>${RESET}"
+        echo -e "  ${GREEN}./termux-build init <repo-url>${RESET}"
+        echo -e "  ${GREEN}./termux-build lint <path | package-name>${RESET}"
+        echo -e "  ${GREEN}./termux-build check-pr <package>${RESET}"
+        echo -e "  ${GREEN}./termux-build doctor${RESET}"
+        echo -e "  ${GREEN}./termux-build suggest <package>${RESET}"
+        echo -e "  ${GREEN}./termux-build explain <package>${RESET}"
+        echo -e "  ${GREEN}./termux-build template${RESET}"
+        echo -e "  ${GREEN}./termux-build guide${RESET}"
+        exit 1
+        ;;
+esac

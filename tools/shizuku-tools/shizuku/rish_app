@@ -1,0 +1,14 @@
+#!/system/bin/sh
+# Alternative rish using app_process
+
+if [ -f "$HOME/rish_shizuku.dex" ]; then
+    DEX_PATH="$HOME/rish_shizuku.dex"
+elif [ -f "$HOME/Downloads/rish_shizuku.dex" ]; then
+    DEX_PATH="$HOME/Downloads/rish_shizuku.dex"
+else
+    echo "rish_shizuku.dex not found!"
+    exit 1
+fi
+
+export CLASSPATH="$DEX_PATH"
+exec app_process / rikka.shizuku.shell.Shell "$@"

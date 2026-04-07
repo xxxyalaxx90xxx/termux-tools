@@ -1,0 +1,393 @@
+{
+  "version": "1.0",
+  "repository": "https://github.com/djunekz/termux-app-store",
+  "generated_at": "2026-04-04T02:29:59.600061+00:00",
+  "total": 24,
+  "packages": [
+    {
+      "package": "ani-cli",
+      "version": "4.10",
+      "maintainer": "@termux-app-store",
+      "description": "A cli tool to browse and play anime",
+      "homepage": "https://github.com/pystardust/ani-cli",
+      "license": "GPL-3.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/pystardust/ani-cli/releases/download/v${TERMUX_PKG_VERSION}/ani-cli",
+      "sha256": "38599dc5bb65a5b9f78e936ed42ffe16b62095dbc6621a5b578ed3e29aac4f3e",
+      "platform_independent": false,
+      "depends": [
+        "nodejs"
+      ]
+    },
+    {
+      "package": "aura",
+      "version": "0.8.2",
+      "maintainer": "@termux-app-store",
+      "description": "Adaptive Unified Runtime Assistant",
+      "homepage": "https://github.com/djunekz/aura",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/aura/archive/refs/tags/v${TERMUX_PKG_VERSION}.zip",
+      "sha256": "918656afc31dfbda1189f4ece91e07a3d7299982c3d7951fd1808f59416e0268",
+      "platform_independent": false,
+      "depends": [
+        "nodejs"
+      ]
+    },
+    {
+      "package": "bashxt",
+      "version": "2.2",
+      "maintainer": "@termux-app-store",
+      "description": "basic command, code color, shortcut keyboar, etc information",
+      "homepage": "https://github.com/djunekz/bashxt",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/bashxt/releases/download/v${TERMUX_PKG_VERSION}/bashxt.tar.gz",
+      "sha256": "b9b27f232d6a752f3243e915d98bb03ecbd982f37e45243d7b82905f745e9512",
+      "platform_independent": false
+    },
+    {
+      "package": "basic",
+      "version": "1.2.0",
+      "maintainer": "@termux-app-store",
+      "description": "Simulator Terminal learning basic command for beginner",
+      "homepage": "https://github.com/djunekz/basic",
+      "license": "GPL-3.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/basic/releases/download/${TERMUX_PKG_VERSION}/basic_${TERMUX_PKG_VERSION}_all.deb",
+      "sha256": "440657aa7347b38f6dd380630f293e496954279829b0cdbd4508fbe5bfdd167d",
+      "platform_independent": false,
+      "depends": [
+        "python"
+      ]
+    },
+    {
+      "package": "baxter",
+      "version": "1.2.4",
+      "maintainer": "@djunekz",
+      "description": "Encrypt and decrypt files termux",
+      "homepage": "https://github.com/djunekz/baxter",
+      "license": "Apache-2.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/baxter/releases/download/v${TERMUX_PKG_VERSION}/baxter-v${TERMUX_PKG_VERSION}.tar.gz",
+      "sha256": "7fac8356d81197218f44e60e0212e12ad63ca55462f9a563b541a589319e3227",
+      "platform_independent": false,
+      "depends": [
+        "nodejs"
+      ]
+    },
+    {
+      "package": "bower",
+      "version": "1.8.12",
+      "maintainer": "@termux-app-store",
+      "description": "A package manager for the web",
+      "homepage": "https://github.com/bower/bower",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://api.github.com/repos/bower/bower/tarball/v${TERMUX_PKG_VERSION}",
+      "sha256": "d54d92c4a12c674e79ed38742bd82b797098c24e67391c963555cf4a23855e01",
+      "platform_independent": false,
+      "depends": [
+        "nodejs"
+      ]
+    },
+    {
+      "package": "encrypt",
+      "version": "1.1",
+      "maintainer": "@djunekz",
+      "description": "ELF binary for file python/python3 with build deb package",
+      "homepage": "https://github.com/djunekz/encrypt",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/encrypt/archive/refs/tags/${TERMUX_PKG_VERSION}.zip",
+      "sha256": "07d954452ed93a1aec029e727da275004bdb67940743a41b357f333b7cc36d5a",
+      "platform_independent": false
+    },
+    {
+      "package": "fd",
+      "version": "10.3.0",
+      "maintainer": "@termux-app-store",
+      "description": "A simple, fast and user-friendly alternative to 'find'",
+      "homepage": "https://github.com/sharkdp/fd",
+      "license": "Apache-2.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/sharkdp/fd/releases/download/v${TERMUX_PKG_VERSION}/fd-v${TERMUX_PKG_VERSION}-aarch64-unknown-linux-musl.tar.gz",
+      "sha256": "996b9b1366433b211cb3bbedba91c9dbce2431842144d925428ead0adf32020b",
+      "platform_independent": false
+    },
+    {
+      "package": "impulse",
+      "version": "1.0.0",
+      "maintainer": "@termux-app-store",
+      "description": "Denial-of-Service ToolKit with multiple attack methods",
+      "homepage": "https://github.com/LimerBoy/Impulse",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/impulse.tar.gz",
+      "sha256": "d03e1a4c74a09b63900ffd1bc889bbc8f5720b83914b1a2fdd5453fb23a63c18",
+      "platform_independent": false
+    },
+    {
+      "package": "infoooze",
+      "version": "1.1.9",
+      "maintainer": "@termux-app-store",
+      "description": "A OSINT tool which helps you to quickly find information effectively.",
+      "homepage": "https://github.com/devxprite/infoooze",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://api.github.com/repos/devxprite/infoooze/tarball/v1.1.9",
+      "sha256": "b856ff7dc73ac57985372d833429c89cf03f52105039e48b71aee6d628abeb36",
+      "platform_independent": false,
+      "depends": [
+        "nodejs"
+      ]
+    },
+    {
+      "package": "lux",
+      "version": "0.24.1",
+      "maintainer": "@termux-app-store",
+      "description": "Fast and simple video download library and CLI tool written in Go",
+      "homepage": "https://github.com/iawia002/lux",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/iawia002/lux/releases/download/v${TERMUX_PKG_VERSION}/lux_${TERMUX_PKG_VERSION}_Linux_arm64.tar.gz",
+      "sha256": "479b09290b8ddda43c994ec5685649eb4635f4bd24ff24e494eddaae473879d7",
+      "platform_independent": false
+    },
+    {
+      "package": "pmcli",
+      "version": "0.1.0",
+      "maintainer": "Djunekz <gab288.gab288@passinbox.com>",
+      "description": "Terminal-based project manager CLI",
+      "homepage": "https://github.com/djunekz/pmcli",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/pmcli/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz",
+      "sha256": "b2e24af39111a75eacfdd195950423108c6c01b5caeed923a904b835a572dc53",
+      "platform_independent": false,
+      "depends": [
+        "rust",
+        "openssl",
+        "zlib"
+      ]
+    },
+    {
+      "package": "pnpm",
+      "version": "10.30.1",
+      "maintainer": "@termux-app-store",
+      "description": "Fast, disk space efficient package manager",
+      "homepage": "https://github.com/pnpm/pnpm",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://registry.npmjs.org/pnpm/-/pnpm-${TERMUX_PKG_VERSION}.tgz",
+      "sha256": "bc8bb877378eab6a8a83114eeb6a31ef88528db4ab5570299baba8fa54da2375",
+      "platform_independent": false
+    },
+    {
+      "package": "pymaker",
+      "version": "1.0.0",
+      "maintainer": "@droidv1",
+      "description": "Simple tool for create python script",
+      "homepage": "https://github.com/droidv1/pymaker",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/pymaker-${TERMUX_PKG_VERSION}.tar.gz",
+      "sha256": "2fe03f6839e7b550f888d477628b852d648ea4ed688643122d3c182d495564e4",
+      "platform_independent": false
+    },
+    {
+      "package": "sigit",
+      "version": "2.0-pre",
+      "maintainer": "@termux-app-store",
+      "description": "SIGIT - Simple Information Gathering Toolkit",
+      "homepage": "https://github.com/termuxhackers-id/SIGIT",
+      "license": "UNKNOWN",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://api.github.com/repos/termuxhackers-id/SIGIT/tarball/2.0-pre",
+      "sha256": "2bfe129b478dc758133f6380dc5f1c27da8af2c3cfe7327e826d4f974e20c993",
+      "platform_independent": false
+    },
+    {
+      "package": "tdoc",
+      "version": "1.0.6",
+      "maintainer": "@djunekz",
+      "description": "TDOC - Diagnostic and repair utility for Termux environment",
+      "homepage": "https://github.com/djunekz/tdoc",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/tdoc/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz",
+      "sha256": "5cded7dd0c642f7703c12148c336f10cdf9fbabcfb37d2d8e8fdd41a6fb515a3",
+      "platform_independent": true,
+      "depends": [
+        "bash",
+        "coreutils",
+        "curl",
+        "git",
+        "gnupg",
+        "termux-tools"
+      ]
+    },
+    {
+      "package": "termstyle",
+      "version": "1.0.0",
+      "maintainer": "@djunekz",
+      "description": "Simple tool for change color, command prompt, and cursor termux",
+      "homepage": "https://gtihub.com/djunekz/termstyle",
+      "license": "GPL-3.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/termstyle/releases/download/${TERMUX_PKG_VERSION}/termstyle_${TERMUX_PKG_VERSION}_all.deb",
+      "sha256": "955a9de10d5896801e44191385ec4ee24881d5e57777b2f6c60fb4f627a3e3fd",
+      "platform_independent": false
+    },
+    {
+      "package": "tuifimanager",
+      "version": "5.2.6",
+      "maintainer": "@termux-app-store",
+      "description": "A terminal-based TUI file manager",
+      "homepage": "https://github.com/GiorgosXou/TUIFIManager",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://api.github.com/repos/GiorgosXou/TUIFIManager/tarball/v.${TERMUX_PKG_VERSION}",
+      "sha256": "4f323aefd84e35177411445c32ed2d48140b0fd1fec688bbcdee0992841e0f00",
+      "platform_independent": false,
+      "depends": [
+        "python"
+      ]
+    },
+    {
+      "package": "tx",
+      "version": "1.0.0",
+      "maintainer": "@termux-app-store",
+      "description": "Advance Terminal Editor Ultimate",
+      "homepage": "https://github.com/djunekz/termux-app-store",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/tx",
+      "sha256": "b1afdfb86640188aaa555c9f4b0c5a1cb4194b07c8d8d06e23ba5ca64670f418",
+      "platform_independent": false,
+      "depends": [
+        "python",
+        "ncurses"
+      ]
+    },
+    {
+      "package": "uv",
+      "version": "0.10.4",
+      "maintainer": "@termux-app-store",
+      "description": "An extremely fast Python package and project manager, written in Rust.",
+      "homepage": "https://github.com/astral-sh/uv",
+      "license": "Apache-2.0",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/astral-sh/uv/releases/download/0.10.4/uv-aarch64-unknown-linux-musl.tar.gz",
+      "sha256": "82fc461031dafb130af761e7dbec1bcc51b826c2e664f5bf8bc4e4f8330320cd",
+      "platform_independent": false
+    },
+    {
+      "package": "webshake",
+      "version": "1.0.2",
+      "maintainer": "Djunekz",
+      "description": "Scan vulnerabilities and analyze websites",
+      "homepage": "https://github.com/djunekz/webshake",
+      "license": "Custom",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/webshake/releases/download/v${TERMUX_PKG_VERSION}/webshake-${TERMUX_PKG_VERSION}.tar.gz",
+      "sha256": "4312838c7d201f1540923dfbeeeb21d8af4ae9896a2ce18357208805a859cbe8",
+      "platform_independent": false
+    },
+    {
+      "package": "zora",
+      "version": "1.2.2",
+      "maintainer": "@termux-app-store",
+      "description": "The ultimate OSINT framework",
+      "homepage": "https://github/djunekz/termux-app-store",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/zora",
+      "sha256": "d59f21a5261da3eea7e2e1898255d672b57efcb8be763a7f77a0b5c0093d18ec",
+      "platform_independent": false,
+      "depends": [
+        "python"
+      ]
+    },
+    {
+      "package": "zorabuilder",
+      "version": "1.0.0",
+      "maintainer": "@termux-app-store",
+      "description": "Builder python standalone ELF",
+      "homepage": "https://github.com/djunekz/termux-app-store",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/zorabuilder",
+      "sha256": "e455fd0af70ad3985f83dbfccb45af92036fa67cf1bfb09c713de0333be01918",
+      "platform_independent": false,
+      "depends": [
+        "python",
+        "binutils-is-llvm"
+      ]
+    },
+    {
+      "package": "zoracrypter",
+      "version": "1.0.0",
+      "maintainer": "@termux-app-store",
+      "description": "Encrypter Stealth Binary Builder",
+      "homepage": "https://github.com/djunekz/termux-app-store",
+      "license": "MIT",
+      "download_size": "Unknown",
+      "installed_size": "Unknown",
+      "source": "https://github.com/djunekz/termux-app-store",
+      "srcurl": "https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/zoracrypter",
+      "sha256": "25b11a1d8fd6b0ef075df5e1d31d5e061e8e6de9e2afdb0c29f11590ab203e1d",
+      "platform_independent": false,
+      "depends": [
+        "clang",
+        "python"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# This file is sourced by pkg
+# Mirror by ISCAS. Hosted in China.
+# Institute of Software Chinese Academy of Sciences | https://isrc.iscas.ac.cn/
+# 
+WEIGHT=1
+MAIN="https://mirror.iscas.ac.cn/termux/apt/termux-main"
+ROOT="https://mirror.iscas.ac.cn/termux/apt/termux-root"
+X11="https://mirror.iscas.ac.cn/termux/apt/termux-x11"

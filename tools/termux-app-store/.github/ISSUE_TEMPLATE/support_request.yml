@@ -1,0 +1,50 @@
+name: 🆘 Support / Help Request
+description: Ajukan pertanyaan atau minta bantuan terkait Termux App Store.
+title: "[HELP] "
+labels: [question]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih sudah mengajukan pertanyaan!
+
+  - type: input
+    id: issue_title
+    attributes:
+      label: Judul Masalah / Pertanyaan
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: Deskripsi Masalah / Pertanyaan
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Langkah Reproduksi (Jika Ada)
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Hasil yang Diharapkan
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Hasil Sebenarnya
+
+  - type: input
+    id: termux_version
+    attributes:
+      label: Termux Version
+
+  - type: input
+    id: android_version
+    attributes:
+      label: Android Version

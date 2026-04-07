@@ -1,0 +1,86 @@
+name: Update Index
+
+permissions:
+  contents: write
+
+on:
+  push:
+    paths:
+      - 'packages/*/build.sh'
+      - 'tools/build.py'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    if: github.repository == 'djunekz/termux-app-store'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Generate index.json
+        run: |
+          echo "Running build.py to generate index.json..."
+          python3 tools/build.py
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet tools/index.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in index.json"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in index.json"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "258516621+termux-app-store@users.noreply.github.com"
+          git config --local user.name "Termux App Store"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/djunekz/termux-app-store.git
+          git add tools/index.json
+          git commit -m "chore: update index.json [skip ci]"
+
+          MAX_RETRIES=3
+          RETRY=0
+          while [ $RETRY -lt $MAX_RETRIES ]; do
+            if git push origin ${{ github.ref_name }}; then
+              echo "✅ Push successful"
+              exit 0
+            fi
+            RETRY=$((RETRY + 1))
+            echo "Push failed, retry $RETRY/$MAX_RETRIES — pulling rebase..."
+            if [ $RETRY -lt $MAX_RETRIES ]; then
+              git pull --rebase origin ${{ github.ref_name }}
+              sleep 3
+            fi
+          done
+          echo "❌ Push failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Summary
+        run: |
+          echo "## Index Generation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_changes.outputs.changed }}" = "true" ]; then
+            echo "✅ index.json updated successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Package Count" >> $GITHUB_STEP_SUMMARY
+            PACKAGE_COUNT=$(jq '.total' tools/index.json)
+            echo "Total packages: **$PACKAGE_COUNT**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No changes detected in index.json" >> $GITHUB_STEP_SUMMARY
+          fi

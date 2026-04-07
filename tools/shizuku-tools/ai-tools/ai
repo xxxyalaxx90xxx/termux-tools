@@ -1,0 +1,70 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# AI CLI with Shizuku integration
+
+source ~/.shizuku_env 2>/dev/null
+
+case "$1" in
+    claude)
+        shift
+        python ~/claude_cli.py "$@"
+        ;;
+    gemini)
+        shift
+        python ~/gemini_cli.py "$@"
+        ;;
+    setup)
+        echo "AI CLI Setup"
+        echo ""
+        read -p "Enter Anthropic API Key: " anthropic_key
+        read -p "Enter Google AI API Key: " google_key
+        
+        cat > ~/.ai_keys << KEYS
+export ANTHROPIC_API_KEY='$anthropic_key'
+export GOOGLE_AI_API_KEY='$google_key'
+KEYS
+        chmod 600 ~/.ai_keys
+        echo "Keys saved to ~/.ai_keys"
+        echo "Run: source ~/.ai_keys"
+        ;;
+    scan)
+        # Use AI to analyze system with rish
+        echo "Scanning system with AI..."
+        if command -v rish &> /dev/null; then
+            SCAN_DATA=$(rish -c "pm list packages -3; dumpsys battery; getprop" 2>/dev/null | head -500)
+        else
+            SCAN_DATA=$(pm list packages 2>/dev/null; getprop)
+        fi
+        
+        echo "$SCAN_DATA" | python ~/claude_cli.py "Analyze this Android system data for security issues"
+        ;;
+    chat)
+        # Interactive chat mode
+        shift
+        model="${1:-claude}"
+        echo "Starting $model chat (type 'exit' to quit)..."
+        
+        while true; do
+            read -p "> " prompt
+            [ "$prompt" = "exit" ] && break
+            
+            if [ "$model" = "gemini" ]; then
+                echo "$prompt" | python ~/gemini_cli.py
+            else
+                echo "$prompt" | python ~/claude_cli.py
+            fi
+            echo
+        done
+        ;;
+    *)
+        echo "AI CLI - Simple AI assistant for Termux"
+        echo ""
+        echo "Usage: ai {claude|gemini|setup|scan|chat} [prompt]"
+        echo ""
+        echo "Examples:"
+        echo "  ai setup                    # Configure API keys"
+        echo "  ai claude 'Hello Claude'    # Ask Claude"
+        echo "  ai gemini 'Hello Gemini'    # Ask Gemini"
+        echo "  ai scan                     # Analyze system"
+        echo "  ai chat [claude|gemini]     # Interactive chat"
+        ;;
+esac

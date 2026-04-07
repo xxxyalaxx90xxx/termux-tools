@@ -1,0 +1,56 @@
+name: ✨ Feature Request
+description: Ajukan ide atau fitur baru untuk Termux App Store.
+title: "[FEATURE] "
+labels: [enhancement]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih sudah mengajukan fitur baru!
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: Judul Fitur
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Deskripsi Fitur
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioritas
+      options:
+        - Tinggi
+        - Sedang
+        - Rendah
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case / Contoh Penggunaan
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Konteks Tambahan
+
+  - type: input
+    id: termux_version
+    attributes:
+      label: Termux Version
+
+  - type: input
+    id: android_version
+    attributes:
+      label: Android Version

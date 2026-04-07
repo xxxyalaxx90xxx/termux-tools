@@ -1,0 +1,8 @@
+# This file is sourced by pkg
+# Mirror by dmitry. Hosted in Nizhny Novgorod, Russia.
+# Dmitry | https://repository.su/
+# Hosted in Nizhny Novgorod, Russia. Updated four times per day.
+WEIGHT=1
+MAIN="https://repository.su/termux/termux-main/"
+ROOT="https://repository.su/termux/termux-root/"
+X11="https://repository.su/termux/termux-x11/"

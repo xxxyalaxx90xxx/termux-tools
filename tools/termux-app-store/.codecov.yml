@@ -1,0 +1,39 @@
+coverage:
+  precision: 2
+  round: down
+  range: "70..100"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 5%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 5%
+        informational: true
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "tests/*"
+
+parsers:
+  python:
+    branch_detection:
+      conditional: yes
+    paths:
+      - "termux_app_store/*.py"
+      - "tools/*.py"
+
+flags:
+  termux_app_store:
+    paths:
+      - "termux_app_store/*.py"
+  tools:
+    paths:
+      - "tools/*.py"

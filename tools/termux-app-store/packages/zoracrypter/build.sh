@@ -1,0 +1,9 @@
+TERMUX_PKG_HOMEPAGE=https://github.com/djunekz/termux-app-store
+TERMUX_PKG_DESCRIPTION="Encrypter Stealth Binary Builder"
+TERMUX_PKG_LICENSE="MIT"
+TERMUX_PKG_MAINTAINER="@termux-app-store"
+TERMUX_PKG_VERSION=1.0.0
+TERMUX_PKG_SRCURL=https://github.com/djunekz/archive/releases/download/v${TERMUX_PKG_VERSION}/zoracrypter
+TERMUX_PKG_SHA256=25b11a1d8fd6b0ef075df5e1d31d5e061e8e6de9e2afdb0c29f11590ab203e1d
+TERMUX_PKG_DEPENDS="clang, python"
+TERMUX_PKG_BUILD_IN_SRC=true

@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "termux-app-store"
+version = "0.2.4"
+description = "The first offline-first, source-based TUI package manager built natively for Termux"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "djunekz", email = "gab288.gab288@passinbox.com" }
+]
+keywords = ["termux", "android", "package-manager", "tui", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Terminals",
+    "Topic :: Utilities",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "textual>=7.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[project.urls]
+Homepage = "https://github.com/djunekz/termux-app-store"
+Repository = "https://github.com/djunekz/termux-app-store"
+"Bug Tracker" = "https://github.com/djunekz/termux-app-store/issues"
+
+[project.scripts]
+termux-app-store = "termux_app_store.main:main"
+tasctl = "termux_app_store.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["termux_app_store*"]
+
+[tool.setuptools.package-data]
+termux_app_store = ["data/*.json"]

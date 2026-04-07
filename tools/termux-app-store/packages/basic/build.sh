@@ -1,0 +1,9 @@
+TERMUX_PKG_HOMEPAGE=https://github.com/djunekz/basic
+TERMUX_PKG_DESCRIPTION="Simulator Terminal learning basic command for beginner"
+TERMUX_PKG_LICENSE="GPL-3.0"
+TERMUX_PKG_MAINTAINER="@termux-app-store"
+TERMUX_PKG_VERSION=1.2.0
+TERMUX_PKG_SRCURL=https://github.com/djunekz/basic/releases/download/${TERMUX_PKG_VERSION}/basic_${TERMUX_PKG_VERSION}_all.deb
+TERMUX_PKG_SHA256=440657aa7347b38f6dd380630f293e496954279829b0cdbd4508fbe5bfdd167d
+TERMUX_PKG_DEPENDS="python"
+TERMUX_PKG_BUILD_IN_SRC=true

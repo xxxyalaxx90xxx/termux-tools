@@ -1,0 +1,44 @@
+# API Keys and sensitive data
+.ai_keys
+*.key
+*.pem
+*_api_key*
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# APK files (too large)
+*.apk
+*.dex
+
+# Logs
+*.log
+.shizuku_keepalive.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Private configurations
+config.local
+.env.local

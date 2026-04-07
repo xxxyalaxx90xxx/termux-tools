@@ -1,0 +1,8 @@
+# This file is sourced by pkg
+# Termux origin repo. Behind cloudflare cache.
+# Termux | https://packages.termux.dev
+# Termux origin repo behind cloudflare cache.
+WEIGHT=10
+MAIN="https://packages-cf.termux.dev/apt/termux-main"
+ROOT="https://packages-cf.termux.dev/apt/termux-root"
+X11="https://packages-cf.termux.dev/apt/termux-x11"
