@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Notes & Backups
+notes/
+.writer_backups/
+.writer_secrets/
+.writer_env
+.writer_theme
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# SSH
+.ssh/
+
+# Termux
+.termux/
