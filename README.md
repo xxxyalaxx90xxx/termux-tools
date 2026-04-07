@@ -170,3 +170,15 @@ MIT License
 ---
 
 **Made with ❤️ for Termux**
+
+## Neue Tools (Round 2)
+
+| Tool | Beschreibung |
+|------|-------------|
+| termux-style-2 | Terminal Themes |
+| pyphisher | Social Engineering |
+| metasploit | Security Framework |
+| kali-nethunter | Kali for Android |
+| termux-app | Official Source |
+
+Gesamt: **16 Repos**, **369MB**, **118 Aliases**
