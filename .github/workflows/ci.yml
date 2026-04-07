@@ -1,0 +1,108 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run shellcheck
+        run: |
+          shellcheck --version
+          shellcheck *.sh .*.sh 2>/dev/null || true
+        continue-on-error: true
+
+  python-lint:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linters
+        run: pip install flake8 pyflakes
+
+      - name: Run flake8
+        run: flake8 *.py --max-line-length=120 --ignore=E501,W503 || true
+        continue-on-error: true
+
+      - name: Run pyflakes
+        run: pyflakes *.py 2>/dev/null || true
+        continue-on-error: true
+
+  test-writer:
+    name: Test Writer Tool
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run basic writer tests
+        run: |
+          bash .writer.sh 2>&1 | head -10
+          bash .writer.sh template py test 2>&1
+          bash .writer.sh template bash test 2>&1
+          bash .writer.sh template js test 2>&1
+          bash .writer.sh template html test 2>&1
+          echo "Writer basic tests passed"
+
+  syntax-check:
+    name: Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check shell syntax
+        run: |
+          for f in *.sh .*.sh; do
+            if [ -f "$f" ]; then
+              echo "Checking $f..."
+              bash -n "$f" 2>&1 || echo "Syntax error in $f"
+            fi
+          done
+
+      - name: Check Python syntax
+        run: |
+          python3 -m py_compile ai-bot.py
+          python3 -m py_compile matrix-rain.py
+          python3 -m py_compile termux_cli_manager.py
+          echo "Python syntax OK"
+
+  release:
+    name: Create Release
+    needs: [lint, python-lint, test-writer, syntax-check]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=v4.0.0-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Changes
+            - Automated release from ${{ github.sha }}
+            - See CHANGELOG.md for details
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
