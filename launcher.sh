@@ -47,6 +47,9 @@ while true; do
     echo -e "    ${GREEN}[13]${RESET} Termux App Store (TUI)"
     echo -e "    ${GREEN}[14]${RESET} Shizuku Tools"
     echo -e "    ${GREEN}[15]${RESET} PDF Tools"
+    echo -e "    ${GREEN}[27]${RESET} Termux Style"
+    echo -e "    ${GREEN}[28]${RESET} Bash-Snippets"
+    echo -e "    ${GREEN}[29]${RESET} Awesome Bash"
     echo ""
 
     echo -e "  ${BOLD}⚡ SYSTEM TOOLS${RESET}"
@@ -89,6 +92,9 @@ while true; do
         13) ~/installed-tools/termux-app-store/tasctl ;;
         14) bash ~/installed-tools/shizuku-tools/setup.sh ;;
         15) ls ~/installed-tools/termux-pdf-tools/ ;;
+        27) bash ~/installed-tools/termux-style/termux-style ;;
+        28) ls ~/installed-tools/bash-snippets/ ;;
+        29) ls ~/installed-tools/awesome-bash/ ;;
         16) bash ~/system-tune.sh ;;
         17) bash ~/speed-boost.sh ;;
         18) bash ~/phone-tune.sh ;;
